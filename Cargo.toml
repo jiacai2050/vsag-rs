@@ -1,0 +1,18 @@
+[package]
+name = "vsag-sys"
+version = "0.0.1"
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+libc = "*"
+
+[build-dependencies]
+cmake = "0.1"
+bindgen = "0.69"
+
+[dev-dependencies]
+rand = "0.8"
+distances = "1"
+simsimd = "4"
+tempdir = "0.3"
