@@ -20,12 +20,15 @@
 
 extern "C" {
 
+#define VSAG_WRAPPER_MAX_ERROR_MESSAGE_LENGTH 256
+
 struct CError {
   int type_;
-  const char *message;
-
-  CError(int type, const char *message) : type_(type), message(message) {}
+  char message[VSAG_WRAPPER_MAX_ERROR_MESSAGE_LENGTH];
 };
+
+CError *new_error(int type_, const char *msg);
+void free_error(const CError *);
 
 const CError *create_index(const char *in_index_type, const char *in_parameters,
 
@@ -53,7 +56,6 @@ const CError *load_index(const char *in_file_path, const char *in_index_type,
 
                          void **out_index_ptr);
 
-void free_error(const CError *);
 void free_index(void *index_ptr);
 void free_i64_vector(int64_t *vector);
 void free_f32_vector(float *vector);

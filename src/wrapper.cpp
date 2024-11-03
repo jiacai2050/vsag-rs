@@ -33,20 +33,40 @@ template <typename T> static void readBinaryPOD(std::istream &in, T &podRef) {
 }
 
 extern "C" {
+CError *new_error(int type_, const char *msg) {
+  CError *err = (CError *)malloc(sizeof(CError));
+  if (err == NULL) {
+    return NULL;
+  }
+
+  size_t msg_size = strlen(msg);
+  memcpy(err->message, msg,
+         msg_size > VSAG_WRAPPER_MAX_ERROR_MESSAGE_LENGTH
+             ? VSAG_WRAPPER_MAX_ERROR_MESSAGE_LENGTH
+             : msg_size);
+
+  return err;
+}
+
+void free_error(const CError *error) {
+  if (error) {
+    free(const_cast<CError *>(error)); // Deallocate the error struct
+  }
+}
 
 const CError *create_index(const char *in_index_type, const char *in_parameters,
                            void **out_index_ptr) {
   if (!in_index_type || !in_parameters || !out_index_ptr) {
-    return new CError{static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
-                      "Invalid null argument."};
+    return new_error(static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
+                     "Invalid null argument.");
   }
 
   auto result = vsag::Factory::CreateIndex(in_index_type, in_parameters);
 
   if (!result.has_value()) {
     // Convert C++ error to dynamically allocated CError
-    return new CError{static_cast<int>(result.error().type),
-                      strdup(result.error().message.c_str())};
+    return new_error(static_cast<int>(result.error().type),
+                     result.error().message.c_str());
   }
 
   auto pIndex = new std::shared_ptr<vsag::Index>(result.value());
@@ -63,8 +83,8 @@ const CError *build_index(void *in_index_ptr, size_t in_num_vectors,
                           size_t *out_num_failed) {
   if (!in_index_ptr || !in_ids || !in_vectors || !out_failed_ids ||
       !out_num_failed) {
-    return new CError{static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
-                      "Invalid null argument."};
+    return new_error(static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
+                     "Invalid null argument.");
   }
 
   // Cast the void pointer back to the original pointer type,
@@ -81,8 +101,8 @@ const CError *build_index(void *in_index_ptr, size_t in_num_vectors,
 
   if (!result.has_value()) {
     // Convert C++ error to dynamically allocated CError
-    return new CError{static_cast<int>(result.error().type),
-                      strdup(result.error().message.c_str())};
+    return new_error(static_cast<int>(result.error().type),
+                     result.error().message.c_str());
   }
 
   // Copy the failed IDs to the output array
@@ -104,8 +124,8 @@ const CError *knn_search_index(void *in_index_ptr, size_t in_dim,
                                size_t *out_num_results) {
   if (!in_index_ptr || !in_query_vector || !in_search_parameters || !out_ids ||
       !out_distances || !out_num_results) {
-    return new CError{static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
-                      "Invalid null argument."};
+    return new_error(static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
+                     "Invalid null argument.");
   }
 
   // Cast the void pointer back to the original pointer type,
@@ -121,8 +141,8 @@ const CError *knn_search_index(void *in_index_ptr, size_t in_dim,
 
   if (!result.has_value()) {
     // Convert C++ error to dynamically allocated CError
-    return new CError{static_cast<int>(result.error().type),
-                      strdup(result.error().message.c_str())};
+    return new_error(static_cast<int>(result.error().type),
+                     result.error().message.c_str());
   }
 
   auto dataset = result.value();
@@ -144,8 +164,8 @@ const CError *knn_search_index(void *in_index_ptr, size_t in_dim,
 
 const CError *dump_index(void *in_index_ptr, const char *in_file_path) {
   if (!in_index_ptr || !in_file_path) {
-    return new CError{static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
-                      "Invalid null argument."};
+    return new_error(static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
+                     "Invalid null argument.");
   }
 
   // Cast the void pointer back to the original pointer type,
@@ -181,7 +201,7 @@ const CError *dump_index(void *in_index_ptr, const char *in_file_path) {
     file.close();
   } else {
     auto err = bs.error();
-    return new CError{static_cast<int>(err.type), strdup(err.message.c_str())};
+    return new_error(static_cast<int>(err.type), err.message.c_str());
   }
 
   return nullptr; // Success: Return NULL
@@ -192,8 +212,8 @@ const CError *load_index(const char *in_file_path, const char *in_index_type,
 
                          void **out_index_ptr) {
   if (!in_file_path || !in_index_type || !in_parameters || !out_index_ptr) {
-    return new CError{static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
-                      "Invalid null argument."};
+    return new_error(static_cast<int>(vsag::ErrorType::INVALID_ARGUMENT),
+                     "Invalid null argument.");
   }
 
   std::ifstream file(in_file_path, std::ios::in);
@@ -243,26 +263,18 @@ const CError *load_index(const char *in_file_path, const char *in_index_type,
     hnsw = index.value();
   } else {
     auto err = index.error();
-    return new CError{static_cast<int>(err.type), strdup(err.message.c_str())};
+    return new_error(static_cast<int>(err.type), err.message.c_str());
   }
   auto res = hnsw->Deserialize(rs);
   if (!res.has_value()) {
     auto err = res.error();
-    return new CError{static_cast<int>(err.type), strdup(err.message.c_str())};
+    return new_error(static_cast<int>(err.type), err.message.c_str());
   }
 
   auto pIndex = new std::shared_ptr<vsag::Index>(hnsw);
   *out_index_ptr = static_cast<void *>(pIndex);
 
   return nullptr; // Success: Return NULL
-}
-
-void free_error(const CError *error) {
-  if (error) {
-    free(const_cast<char *>(error->message)); // Properly deallocate the
-                                              // dynamically allocated message
-    delete error;                             // Deallocate the error struct
-  }
 }
 
 void free_index(void *index_ptr) {

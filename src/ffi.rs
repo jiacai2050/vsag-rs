@@ -64,16 +64,20 @@ extern "C" {
 #[repr(C)]
 pub struct CError {
     pub type_: c_int,
-    pub message: *const c_char,
+    // should be same length with CError defined in wrapper.h
+    pub message: [u8; 256],
 }
 
 pub fn from_c_error(err: *const CError) -> crate::error::Error {
     let error = crate::error::Error {
         error_type: unsafe { std::mem::transmute::<i32, crate::error::ErrorType>((*err).type_) },
         message: unsafe {
-            std::ffi::CStr::from_ptr((*err).message)
-                .to_string_lossy()
-                .into_owned()
+            let null_pos = (*err)
+                .message
+                .iter()
+                .position(|&x| x == 0)
+                .unwrap_or((*err).message.len());
+            String::from_utf8_lossy(&(*err).message[..null_pos]).into_owned()
         },
     };
     unsafe {
