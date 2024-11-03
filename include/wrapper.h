@@ -21,59 +21,42 @@
 extern "C" {
 
 struct CError {
-    int type_;
-    const char* message;
+  int type_;
+  const char *message;
 
-    CError(int type, const char* message) : type_(type), message(message) {}
+  CError(int type, const char *message) : type_(type), message(message) {}
 };
 
-const CError* create_index(
-    const char* in_index_type,
-    const char* in_parameters,
-    
-    void** out_index_ptr
-);
+const CError *create_index(const char *in_index_type, const char *in_parameters,
 
-const CError* build_index(
-    void* in_index_ptr,
-    size_t in_num_vectors,
-    size_t in_dim,
-    const int64_t* in_ids,
-    const float* in_vectors,
+                           void **out_index_ptr);
 
-    const int64_t** out_failed_ids,
-    size_t* out_num_failed
-);
+const CError *build_index(void *in_index_ptr, size_t in_num_vectors,
+                          size_t in_dim, const int64_t *in_ids,
+                          const float *in_vectors,
 
-const CError* knn_search_index(
-    void* in_index_ptr,
-    size_t in_dim,
-    const float* in_query_vector,
-    size_t in_k,
-    const char* in_search_parameters,
+                          const int64_t **out_failed_ids,
+                          size_t *out_num_failed);
 
-    const int64_t** out_ids,
-    const float** out_distances,
-    size_t* out_num_results
-);
+const CError *knn_search_index(void *in_index_ptr, size_t in_dim,
+                               const float *in_query_vector, size_t in_k,
+                               const char *in_search_parameters,
 
-const CError* dump_index(
-    void* in_index_ptr,
-    const char* in_file_path
-);
+                               const int64_t **out_ids,
+                               const float **out_distances,
+                               size_t *out_num_results);
 
-const CError* load_index(
-    const char* in_file_path,
-    const char* in_index_type,
-    const char* in_parameters,
+const CError *dump_index(void *in_index_ptr, const char *in_file_path);
 
-    void** out_index_ptr
-);
+const CError *load_index(const char *in_file_path, const char *in_index_type,
+                         const char *in_parameters,
 
-void free_error(const CError*);
-void free_index(void* index_ptr);
-void free_i64_vector(int64_t* vector);
-void free_f32_vector(float* vector);
+                         void **out_index_ptr);
+
+void free_error(const CError *);
+void free_index(void *index_ptr);
+void free_i64_vector(int64_t *vector);
+void free_f32_vector(float *vector);
 } // extern "C"
 
 #endif // WRAPPER_H
