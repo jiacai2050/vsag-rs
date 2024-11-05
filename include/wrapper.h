@@ -20,60 +20,45 @@
 
 extern "C" {
 
-struct CError {
-    int type_;
-    const char* message;
+#define VSAG_WRAPPER_MAX_ERROR_MESSAGE_LENGTH 256
 
-    CError(int type, const char* message) : type_(type), message(message) {}
+struct CError {
+  int type_;
+  char message[VSAG_WRAPPER_MAX_ERROR_MESSAGE_LENGTH];
 };
 
-const CError* create_index(
-    const char* in_index_type,
-    const char* in_parameters,
-    
-    void** out_index_ptr
-);
+CError *new_error(int type_, const char *msg);
+void free_error(const CError *);
 
-const CError* build_index(
-    void* in_index_ptr,
-    size_t in_num_vectors,
-    size_t in_dim,
-    const int64_t* in_ids,
-    const float* in_vectors,
+const CError *create_index(const char *in_index_type, const char *in_parameters,
 
-    const int64_t** out_failed_ids,
-    size_t* out_num_failed
-);
+                           void **out_index_ptr);
 
-const CError* knn_search_index(
-    void* in_index_ptr,
-    size_t in_dim,
-    const float* in_query_vector,
-    size_t in_k,
-    const char* in_search_parameters,
+const CError *build_index(void *in_index_ptr, size_t in_num_vectors,
+                          size_t in_dim, const int64_t *in_ids,
+                          const float *in_vectors,
 
-    const int64_t** out_ids,
-    const float** out_distances,
-    size_t* out_num_results
-);
+                          const int64_t **out_failed_ids,
+                          size_t *out_num_failed);
 
-const CError* dump_index(
-    void* in_index_ptr,
-    const char* in_file_path
-);
+const CError *knn_search_index(void *in_index_ptr, size_t in_dim,
+                               const float *in_query_vector, size_t in_k,
+                               const char *in_search_parameters,
 
-const CError* load_index(
-    const char* in_file_path,
-    const char* in_index_type,
-    const char* in_parameters,
+                               const int64_t **out_ids,
+                               const float **out_distances,
+                               size_t *out_num_results);
 
-    void** out_index_ptr
-);
+const CError *dump_index(void *in_index_ptr, const char *in_file_path);
 
-void free_error(const CError*);
-void free_index(void* index_ptr);
-void free_i64_vector(int64_t* vector);
-void free_f32_vector(float* vector);
+const CError *load_index(const char *in_file_path, const char *in_index_type,
+                         const char *in_parameters,
+
+                         void **out_index_ptr);
+
+void free_index(void *index_ptr);
+void free_i64_vector(int64_t *vector);
+void free_f32_vector(float *vector);
 } // extern "C"
 
 #endif // WRAPPER_H
