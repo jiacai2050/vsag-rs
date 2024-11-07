@@ -25,6 +25,7 @@ fn main() {
         .env("TARGET", "")
         .build();
 
+    println!("cargo:rustc-link-lib=dylib=stdc++");
     println!("cargo:rustc-link-lib=static=vsag_wrapper");
     println!("cargo:rustc-link-lib=dylib=vsag");
     println!("cargo:rustc-link-search=native={}/build", dst.display());
