@@ -32,6 +32,8 @@ template <typename T> static void readBinaryPOD(std::istream &in, T &podRef) {
   in.read((char *)&podRef, sizeof(T));
 }
 
+extern "C" {
+
 CError *new_error(int type_, const char *msg) {
   CError *err = (CError *)malloc(sizeof(CError));
   if (err == NULL) {
@@ -302,3 +304,5 @@ void free_f32_vector(float *vector) {
     delete[] vector;
   }
 }
+
+} // extern "C"
