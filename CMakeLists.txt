@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD 11)
 include(FetchContent)
 FetchContent_Declare(
   vsag
-  GIT_REPOSITORY https://github.com/alipay/vsag
-  GIT_TAG v0.11.7
+  GIT_REPOSITORY https://github.com/jiacai2050/vsag
+  GIT_TAG fix-static
 )
 FetchContent_MakeAvailable(vsag)
 
@@ -21,4 +21,4 @@ target_include_directories(vsag_wrapper PUBLIC
 )
 
 # link with vsag
-target_link_libraries(vsag_wrapper PUBLIC vsag)
+target_link_libraries(vsag_wrapper PUBLIC vsag_static)
