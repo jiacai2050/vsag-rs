@@ -16,6 +16,7 @@ fn main() {
     println!("cargo:rerun-if-changed=include/wrapper.h");
     println!("cargo:rerun-if-changed=src/wrapper.cpp");
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rustc-cdylib-link-arg=-fPIC");
 
     let dst = cmake::Config::new("")
         .build_target("vsag_wrapper")
