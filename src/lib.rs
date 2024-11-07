@@ -33,6 +33,9 @@ pub struct VsagIndex {
     ptr: *const c_void,
 }
 
+/// The index in c doesn't contains any thread-locals variables, so it's sendable.
+unsafe impl Send for VsagIndex {}
+
 impl VsagIndex {
     /// Creates a new vsag index.
     ///
