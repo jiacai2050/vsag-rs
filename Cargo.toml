@@ -1,14 +1,11 @@
-cargo-features = ["profile-rustflags"]
-
 [package]
 name = "vsag-sys"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
 
 [lib]
 crate-type = ["cdylib"]
-# crate-type = ["staticlib"]
 
 [dependencies]
 libc = "*"
@@ -22,15 +19,3 @@ rand = "0.8"
 distances = "1"
 simsimd = "4"
 tempdir = "0.3"
-
-[profile.release]
-rustflags = [
-    "-C", "target-feature=+crt-static",
-    "-C", "link-arg=-s",
-]
-
-[profile.dev]
-rustflags = [
-    "-C", "target-feature=+crt-static",
-    "-C", "link-arg=-s",
-]
