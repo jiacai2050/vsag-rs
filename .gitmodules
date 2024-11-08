@@ -1,0 +1,3 @@
+[submodule "vsag-sys"]
+	path = vsag-sys
+	url = https://github.com/jiacai2050/vsag.git
