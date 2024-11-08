@@ -19,6 +19,8 @@ fn main() {
     println!("cargo:rustc-cdylib-link-arg=-fPIC");
 
     let dst = cmake::Config::new("vsag-sys")
+        // .very_verbose(true)
+        // .always_configure(true)
         // .build_target("vsag_wrapper")
         // Cargo sets TARGET to the target triple
         // but building openblas via cmake will fail if it's set
@@ -26,11 +28,11 @@ fn main() {
         .build();
 
     // println!("cargo:rustc-link-lib=dylib=stdc++");
-    println!("cargo:rustc-link-lib=static=vsag_static");
     // println!("cargo:rustc-link-lib=dylib=vsag");
-    println!("cargo:rustc-link-search=native={}/build", dst.display());
-    println!(
-        "cargo:rustc-link-search=native={}/build/_deps/vsag-build/src",
-        dst.display()
-    );
+    println!("cargo:rustc-link-search=native={}/lib", dst.display());
+    // println!(
+    //     "cargo:rustc-link-search=native={}/build/_deps/vsag-build/src",
+    //     dst.display()
+    // );
+    println!("cargo:rustc-link-lib=static=vsag_static");
 }
