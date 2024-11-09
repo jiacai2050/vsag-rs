@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Install deps
         run: |
           sudo apt install -y gfortran python3-dev libomp-15-dev lcov intel-mkl
