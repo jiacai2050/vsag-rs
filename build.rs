@@ -13,18 +13,29 @@
 // limitations under the License.
 
 fn main() {
+    println!("cargo:rerun-if-env-changed=VSAG_LIB_PATH");
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rustc-cdylib-link-arg=-fPIC");
-
-    let dst = cmake::Config::new("vsag-sys")
-        // Cargo sets TARGET to the target triple
-        // but building openblas via cmake will fail if it's set
-        // ```plaintext
-        // The TARGET specified on the command line or in Makefile.rule is not supported. Please choose a target from TargetList.txt
-        // ```
-        .env("TARGET", "")
-        .build();
-
     println!("cargo:rustc-link-lib=dylib=vsag");
-    println!("cargo:rustc-link-search=native={}/lib", dst.display());
+
+    if let Some(lib_path) = vsag_lib_path() {
+        println!("cargo:rustc-link-search=native={lib_path}",);
+    }
+}
+
+fn vsag_lib_path() -> Option<String> {
+    #[cfg(feature = "vendored")]
+    {
+        let dst = cmake::Config::new("vsag-sys")
+            // Cargo sets TARGET to the target triple
+            // but building openblas via cmake will fail if it's set
+            // ```plaintext
+            // The TARGET specified on the command line or in Makefile.rule is not supported. Please choose a target from TargetList.txt
+            // ```
+            .env("TARGET", "")
+            .build();
+
+        return Some(format!("{}/lib", dst.display()));
+    }
+
+    std::env::var("VSAG_LIB_PATH").map_or(None, |v| Some(v.to_string()))
 }
