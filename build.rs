@@ -34,7 +34,12 @@ fn vsag_lib_path() -> Option<String> {
             .env("TARGET", "")
             .build();
 
-        return Some(format!("{}/lib", dst.display()));
+        for path in ["lib64", "lib"] {
+            let lib = dst.join(path);
+            if lib.join("libvsag.so").exists() {
+                return Some(lib.display().to_string());
+            }
+        }
     }
 
     std::env::var("VSAG_LIB_PATH").map_or(None, |v| Some(v.to_string()))
