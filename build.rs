@@ -22,6 +22,23 @@ fn main() {
     }
 }
 
+/// `some-feature` becomes `SOME_FEATURE` options in cmake.
+#[cfg(feature = "vendored")]
+macro_rules! define_config_based_on_features {
+    ($config:ident, $($feature:expr),*) => {
+        $(
+            $config.define(
+                $feature.to_uppercase().replace("-", "_"),
+                if cfg!(feature = $feature) {
+                    "ON"
+                } else {
+                    "OFF"
+                },
+            );
+        )*
+    };
+}
+
 fn vsag_lib_path() -> Option<String> {
     #[cfg(feature = "vendored")]
     {
@@ -34,11 +51,16 @@ fn vsag_lib_path() -> Option<String> {
         // ```
         config.env("TARGET", "");
 
-        if cfg!(feature = "no-intel-mkl") {
-            config.define("ENABLE_INTEL_MKL", "OFF");
-        }
+        define_config_based_on_features!(
+            config,
+            "enable-intel-mkl",
+            "enable-libcxx",
+            "enable-cxx11-abi"
+        );
+
         let dst = config.build();
 
+        // centos use `lib64`, ubuntu use `lib` convention.
         for path in ["lib64", "lib"] {
             let lib = dst.join(path);
             if lib.join("libvsag.so").exists() {
