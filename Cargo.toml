@@ -1,5 +1,5 @@
 [package]
-name = "vsag-sys"
+name = "vsag"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
@@ -9,7 +9,6 @@ libc = "*"
 
 [build-dependencies]
 cmake = "0.1"
-bindgen = "0.69"
 
 [dev-dependencies]
 rand = "0.8"
