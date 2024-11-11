@@ -18,5 +18,9 @@ simsimd = "4"
 tempdir = "0.3"
 
 [features]
+default = ["enable-cxx11-abi", "vendored"]
 vendored = []
-no-intel-mkl = []
+enable-intel-mkl = []
+enable-cxx11-abi = []
+# only support in clang
+enable-libcxx = []
