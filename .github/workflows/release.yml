@@ -3,8 +3,12 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'           # Push events to every tag not containing /
+      - 'v*'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   publish:
@@ -13,11 +17,13 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Publish
-        run: cargo publish
+        run: cargo publish --no-default-features
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
