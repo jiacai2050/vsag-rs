@@ -3,9 +3,14 @@ name = "vsag"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-
-[dependencies]
-libc = "*"
+authors = [
+    "Jiacai Liu <dev@liujiacai.net>",
+    "Greptime Team <info@greptime.com>",
+]
+repository = "https://github.com/jiacai2050/vsag-rs"
+homepage = "https://github.com/jiacai2050/vsag-rs"
+keywords = ["vsag", "vector", "llm", "dag", "knn"]
+readme = "README.md"
 
 [build-dependencies]
 cmake = "0.1"

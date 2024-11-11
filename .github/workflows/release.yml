@@ -19,6 +19,5 @@ jobs:
 
       - name: Publish
         run: cargo publish
-        working-directory: sqlness
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
