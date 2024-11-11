@@ -25,14 +25,19 @@ fn main() {
 fn vsag_lib_path() -> Option<String> {
     #[cfg(feature = "vendored")]
     {
-        let dst = cmake::Config::new("vsag-sys")
-            // Cargo sets TARGET to the target triple
-            // but building openblas via cmake will fail if it's set
-            // ```plaintext
-            // The TARGET specified on the command line or in Makefile.rule is not supported. Please choose a target from TargetList.txt
-            // ```
-            .env("TARGET", "")
-            .build();
+        let mut config = cmake::Config::new("vsag-sys");
+
+        // Cargo sets TARGET to the target triple
+        // but building openblas via cmake will fail if it's set
+        // ```plaintext
+        // The TARGET specified on the command line or in Makefile.rule is not supported. Please choose a target from TargetList.txt
+        // ```
+        config.env("TARGET", "");
+
+        if cfg!(feature = "no-intel-mkl") {
+            config.define("ENABLE_INTEL_MKL", "OFF");
+        }
+        let dst = config.build();
 
         for path in ["lib64", "lib"] {
             let lib = dst.join(path);

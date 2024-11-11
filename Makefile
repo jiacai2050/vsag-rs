@@ -6,4 +6,4 @@ fmt:
 
 .PHONY: test
 test:
-	cargo test --features "vendored"
+	cargo test --all-features

@@ -19,3 +19,4 @@ tempdir = "0.3"
 
 [features]
 vendored = []
+no-intel-mkl = []
