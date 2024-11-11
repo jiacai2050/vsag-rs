@@ -23,6 +23,7 @@ fn main() {
 }
 
 /// `some-feature` becomes `SOME_FEATURE` options in cmake.
+#[cfg(feature = "vendored")]
 macro_rules! define_config_based_on_features {
     ($config:ident, $($feature:expr),*) => {
         $(
