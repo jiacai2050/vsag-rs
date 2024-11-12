@@ -1,7 +1,7 @@
 [package]
 name = "vsag"
-description = "VSAG Rust binding"
-version = "0.1.0"
+description = "Rust binding for VSAG, a vector indexing library used for similarity search."
+version = "0.1.1"
 edition = "2021"
 license = "Apache-2.0"
 authors = [
@@ -10,7 +10,7 @@ authors = [
 ]
 repository = "https://github.com/jiacai2050/vsag-rs"
 homepage = "https://github.com/jiacai2050/vsag-rs"
-keywords = ["vsag", "vector", "llm", "dag", "knn"]
+keywords = ["vector", "llm", "dag", "ann", "hnsw"]
 readme = "README.md"
 
 [build-dependencies]
@@ -29,3 +29,6 @@ enable-intel-mkl = []
 enable-cxx11-abi = []
 # only support in clang
 enable-libcxx = []
+
+[package.metadata.docs.rs]
+no-default-features = true
